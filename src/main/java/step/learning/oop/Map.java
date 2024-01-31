@@ -1,13 +1,11 @@
 package step.learning.oop;
 
 public class Map extends Literature {
-    private int scale;  // Змінено тип на int
+    private int scale;
 
     public Map(String title, String _scale) {
         super(title);
         int scaleValue = Integer.parseInt(_scale.split(":")[1]);
-
-        // Перевірка масштабу на кратність 1000
         if (scaleValue % 1000 == 0) {
             this.scale = scaleValue;
         } else {
