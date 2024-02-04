@@ -33,6 +33,15 @@ public class OopDemo {
 
 //    Перед дз скопируй все файлы из репозитория преподавателя!!!
 
+    private void printNotOld(){
+        for (Literature literature : catalog){
+            //  Reflection
+            Class<?> type = literature.getClass();
+            if(!(type.isAnnotationPresent(Used.class))){
+                System.out.println(literature.getCard());
+            }
+        }
+    }
     private void printOld(){
         for (Literature literature : catalog){
             //  Reflection
