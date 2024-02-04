@@ -15,6 +15,7 @@ public class OopDemo {
             catalog.add(new Newspaper("Daily Mail", "2024-01-29"));
             catalog.add(new Journal("R&D World", "123"));
             catalog.add(new Map("Odessa", "1:50000"));
+            catalog.add(new OldMap("OldOdessa", "1:250000"));
         }
         catch (Exception ex) {
             System.err.println("Literature add error: " + ex.getMessage() ) ;
@@ -29,6 +30,8 @@ public class OopDemo {
         printNotCopyable();
         System.out.println("OLD:");
         printOld();
+        System.out.println("NOT OLD:");
+        printNotOld();
     }
 
 //    Перед дз скопируй все файлы из репозитория преподавателя!!!
