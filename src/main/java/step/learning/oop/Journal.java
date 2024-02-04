@@ -1,6 +1,6 @@
 package step.learning.oop;
 
-public class Journal extends Literature {
+public class Journal extends Literature implements Copyable{
     public int getNumber() {
         return number;
     }
