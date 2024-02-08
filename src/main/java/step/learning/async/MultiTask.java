@@ -1,5 +1,6 @@
 package step.learning.async;
 
+import java.util.Random;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -7,7 +8,8 @@ import java.util.function.Supplier;
 
 public class MultiTask {
     private final ExecutorService taskPool =
-            Executors.newFixedThreadPool(3) ;
+            Executors.newFixedThreadPool(3);
+
     public void demo() {
         // Continuations - нитки коду
         // task1.1 - task1.2  -- нитка (задачі, що мають йти послідовно)
@@ -24,21 +26,48 @@ public class MultiTask {
             System.out.println("Got: " + supply);
         };
         Function<String, String> transform = (source) -> {
-            return "Processed " + source ;
+            return "Processed " + source;
         };
-        Future<?> task1 = CompletableFuture
-                .supplyAsync(supplier, taskPool)
-                .thenApply(transform)
-                .thenApply(transform)
-                .thenAccept(consumer);
-        try {
-            task1.get(2, TimeUnit.SECONDS);
+
+        // Добавляем мою реализацию PanDigitalTask
+        for (int i = 0; i < 10; i++) {
+            taskPool.submit(new PanDigitalTask(i));
         }
-        catch (InterruptedException | ExecutionException | TimeoutException e) {
+
+        // Ваш код ожидания завершения задачи
+        try {
+            Thread.sleep(2000); // Подождать достаточное время для выполнения всех задач
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         taskPool.shutdown();
     }
+
+    // Класс PanDigitalTask
+    private static class PanDigitalTask implements Runnable {
+        private int digit;
+        private static StringBuilder panDigital = new StringBuilder();
+        private static final Object depositLocker = new Object();
+        private static final Random random = new Random();
+
+        public PanDigitalTask(int digit) {
+            this.digit = digit;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(digit == 0 ? random.nextInt(150) + 10 : random.nextInt(150));
+            } catch (InterruptedException e) {
+                System.err.println("Sleeping interrupt");
+            }
+            synchronized (depositLocker) {
+                panDigital.append(digit);
+            }
+            System.out.printf("|Digit: %d|PanDigital: %s|\n", digit, panDigital);
+        }
+    }
+
     public void demo3() {
         long startTime = System.nanoTime();
         long tick = (long) 1e6;  // nano/milli
