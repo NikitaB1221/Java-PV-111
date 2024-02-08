@@ -8,6 +8,7 @@ import java.util.Random;
 public class MultiThread {
     private static final Random random = new Random();
     private double deposit;
+    private String PanDigital = "";
     private final Object depositLocker = new Object();
 
     public void demo() {
@@ -22,11 +23,18 @@ public class MultiThread {
         // thread1.run();   // синхронний старт
         thread1.start();  // асинхронний старт (в іншому потоці)
 
-        for (double i = 1; i <= 12; i++) {
-            new Thread(new DepositTask(i)).start();
+//        for (double i = 1; i <= 12; i++) {
+//            new Thread(new DepositTask(i)).start();
+//        }
+
+        System.out.println("\n");
+
+        for (int i = 0; i < 10; i++) {
+            new Thread(new PanDigitalTask(i)).start();
         }
 
     }
+
 
     class DepositTask implements Runnable {   // nested class - клас у середині іншого класу
         double percent;
@@ -38,7 +46,6 @@ public class MultiThread {
 
         @Override
         public void run() {
-
             try {
                 Thread.sleep(150 /*+ random.nextInt(150)*/);
             } catch (InterruptedException e) {
@@ -54,6 +61,29 @@ public class MultiThread {
             System.out.printf("Before +%.1f: %.2f\n", percent, before);
             System.out.printf("After: +%.1f: %.2f\n", percent, after);
 
+
+
+
+        }
+    }
+
+    class PanDigitalTask implements Runnable {
+        int digit;
+        public PanDigitalTask(int digit) {
+            this.digit = digit;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(digit == 0 ? random.nextInt(150)+10 : random.nextInt(150));
+            } catch (InterruptedException e) {
+                System.err.println("Sleeping interrupt");
+            }
+            synchronized (depositLocker){
+                PanDigital += String.valueOf(digit);
+            }
+            System.out.printf("|Digit: %d|PanDigital: %s|\n",digit,PanDigital);
         }
     }
 }
