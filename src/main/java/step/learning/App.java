@@ -20,12 +20,17 @@ public class App
 //        new Basics().run();
 //        new FileIO().run();
 //        new OopDemo().run();
-        new AsyncDemo().run();
+//        new AsyncDemo().run();
 //        new DbDemo().run();
 
 //        Injector injector = Guice.createInjector( new ServiceModule());
 //        IocDemo instance = injector.getInstance(IocDemo.class);
 //        instance.run();
+
+        try( ServiceModule services = new ServiceModule() ) {
+            Guice.createInjector( services ).getInstance( DbDemo.class ).run();
+        } catch (Exception ignored) {}
+        Guice.createInjector( new ServiceModule()).getInstance(DbDemo.class).run();
     }
 }
 

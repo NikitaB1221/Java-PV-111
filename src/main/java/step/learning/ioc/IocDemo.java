@@ -20,10 +20,10 @@ public class IocDemo {
 
     public void run(){
         System.out.println("Inversion of Control");
-        System.out.println(hashService.hash("123"));
-        System.out.println(hashServiceField.hash("123"));
+//        System.out.println(hashService.hash("123"));
+//        System.out.println(hashServiceField.hash("123"));
 //        System.out.println(hashService.hashCode() + "||" + hashServiceField.hashCode());
 
-        System.out.println(codeGen.newCode(30));
+        System.out.println(codeGen.newCode(12));
     }
 }

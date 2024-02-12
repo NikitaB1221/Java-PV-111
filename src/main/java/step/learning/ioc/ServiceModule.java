@@ -1,19 +1,28 @@
 package step.learning.ioc;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import step.learning.services.HashService;
 import step.learning.services.Md5HashService;
 import step.learning.services.Sha1HashService;
+import step.learning.services.rnd.AlphaNumericCodeGen;
 import step.learning.services.rnd.CodeGen;
 import step.learning.services.rnd.DigitCodeGen;
+import step.learning.services.rnd.GroupedDigitCodeGen;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Random;
 
 /**
  * Binding interfaces and classes for services
  */
-public class ServiceModule extends AbstractModule {
+public class ServiceModule extends AbstractModule implements AutoCloseable{
+
+    Driver mySqlDriver;
     @Override
     protected void configure() {
 //        bind(HashService.class).to(Md5HashService.class);
@@ -26,6 +35,40 @@ public class ServiceModule extends AbstractModule {
                 .to(Md5HashService.class);
 
         bind(Random.class).toInstance(new Random());
-        bind(CodeGen.class).to(DigitCodeGen.class);
+//        bind(CodeGen.class).to(DigitCodeGen.class);
+//        bind(CodeGen.class).to(AlphaNumericCodeGen.class);
+        bind(CodeGen.class).to(GroupedDigitCodeGen.class);
+    }
+
+
+    private Connection connection;
+
+    @Provides
+    public Connection getConnection() {
+        if (connection == null){
+            mySqlDriver = null;
+            try {
+                mySqlDriver = new com.mysql.cj.jdbc.Driver();
+                DriverManager.registerDriver(mySqlDriver);
+                String connectionString = "jdbc:mysql://localhost:3306/java_pv_111" +
+                        "?useUnicode=true&characterEncoding=UTF-8";
+                connection = DriverManager.getConnection(connectionString, "user_111", "pass_111");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }
+        return connection;
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (connection != null) {
+            connection.close();
+        }
+        if (mySqlDriver != null) {
+            DriverManager.deregisterDriver(mySqlDriver);
+        }
     }
 }
